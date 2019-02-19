@@ -11,7 +11,8 @@ server.use(express.json());
 server.use(helmet());
 
 //routers
-server.use('/api/zoos', zoosRouter)
+server.use('/api/zoos', zoosRouter);
+server.use('/api/bears', bearsRouter);
 
 
 module.exports = server
