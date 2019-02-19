@@ -16,6 +16,10 @@ const server = express();
 server.use(express.json());
 server.use(helmet());
 
+const errors = {
+  '19': 'A zoo by that name already exists'
+}
+
 // endpoints here
 server.get('/api/zoos', async (req, res) => {
   try {
@@ -46,7 +50,24 @@ server.post('/api/zoos', async (req, res) => {
 
     res.status(201).json(zoo);
   } catch (error) {
-    res.status(500).json(error)
+    const message = errors[error.errno] || 'There was a problem adding the zoo to the database'
+    res.status(500).json({message, error})
+  }
+});
+
+server.delete('/api/zoos/:id', async (req, res) => {
+  try {
+    const count = await db('zoos')
+      .where({ id: req.params.id })
+      .del();
+    
+      if (count) {
+        res.status(204).end();
+      } else {
+        res.status(404).json({ message: 'Record with that id not found' });
+      }
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
